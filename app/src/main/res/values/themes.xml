@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Tema principal de la app -->
+    <style name="Theme.Travelgo" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Personaliza colores, etc. -->
+    </style>
+
+    <!-- Tema para Splash -->
+    <style name="Theme.Travelgo.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+</resources>

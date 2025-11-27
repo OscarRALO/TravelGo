@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CardView + ConstraintLayout + Material Design -->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardDestination"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
+
+    <!-- ConstraintLayout para mejor posicionamiento -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Imagen del destino -->
+        <ImageView
+            android:id="@+id/ivDestinationImage"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/destination_image"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:src="@drawable/machupicchu" />
+
+        <!-- Overlay oscuro para mejorar legibilidad -->
+        <View
+            android:id="@+id/overlayDark"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="#44000000"
+            app:layout_constraintTop_toTopOf="@id/ivDestinationImage"
+            app:layout_constraintBottom_toBottomOf="@id/ivDestinationImage"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- FloatingActionButton para favoritos (Material Design) -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabFavorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            android:contentDescription="@string/add_to_favorites"
+            app:fabCustomSize="48dp"
+            app:fabSize="mini"
+            app:elevation="6dp"
+            app:srcCompat="@drawable/ic_favorite_border"
+            app:tint="@android:color/white"
+            app:backgroundTint="#E53935"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Chip de categoría (Material Design) -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            app:chipBackgroundColor="#80000000"
+            app:chipCornerRadius="12dp"
+            app:chipMinHeight="32dp"
+            app:layout_constraintBottom_toBottomOf="@id/ivDestinationImage"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="🏖️ Playa" />
+
+        <!-- Contenedor de información -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            app:layout_constraintTop_toBottomOf="@id/ivDestinationImage"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <!-- Nombre del destino -->
+            <TextView
+                android:id="@+id/tvDestinationName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#1A1A1A"
+                android:maxLines="2"
+                android:ellipsize="end"
+                tools:text="Machu Picchu" />
+
+            <!-- Ciudad y país -->
+            <TextView
+                android:id="@+id/tvLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:drawablePadding="6dp"
+                android:drawableStart="@drawable/ic_location"
+                tools:text="Cusco, Perú" />
+
+            <!-- Descripción corta -->
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:maxLines="2"
+                android:ellipsize="end"
+                tools:text="Antigua ciudad inca en las montañas de los Andes" />
+
+            <!-- Contenedor de rating y precio -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- Rating -->
+                <TextView
+                    android:id="@+id/tvRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFD700"
+                    android:drawableStart="@drawable/ic_star"
+                    android:drawablePadding="4dp"
+                    tools:text="4.9" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <!-- Precio -->
+                <TextView
+                    android:id="@+id/tvPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#4CAF50"
+                    tools:text="Desde S/. 350" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

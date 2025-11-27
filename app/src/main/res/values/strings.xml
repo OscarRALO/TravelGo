@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TravelGo</string>
+
+    <!-- Home -->
+    <string name="welcome_back">Bienvenido de nuevo</string>
+    <string name="user_name">Viajero</string>
+    <string name="search_destinations">Buscar destinos…</string>
+    <string name="popular_destinations">Destinos Populares</string>
+    <string name="no_destinations_found">No se encontraron destinos</string>
+    <string name="try_different_search">Intenta con otra búsqueda</string>
+
+    <!-- Categorías -->
+    <string name="all">Todos</string>
+    <string name="beach">Playa</string>
+    <string name="mountain">Montaña</string>
+    <string name="city">Ciudad</string>
+    <string name="historic">Histórico</string>
+    <string name="adventure">Aventura</string>
+    <string name="nature">Naturaleza</string>
+
+    <!-- Favoritos -->
+    <string name="add_to_favorites">Agregar a favoritos</string>
+    <string name="remove_from_favorites">Quitar de favoritos</string>
+    <string name="added_to_favorites">Agregado a favoritos</string>
+    <string name="removed_from_favorites">Eliminado de favoritos</string>
+    <string name="my_favorites">Mis Favoritos</string>
+    <string name="no_favorites">No tienes favoritos</string>
+    <string name="no_favorites_message">Los destinos que marques como favoritos aparecerán aquí</string>
+
+    <!-- Detalles -->
+    <string name="destination_image">Imagen del destino</string>
+    <string name="rating">Calificación</string>
+    <string name="reviews">Reseñas</string>
+    <string name="price">Precio</string>
+    <string name="location">Ubicación</string>
+    <string name="description">Descripción</string>
+    <string name="how_to_get">Cómo llegar</string>
+    <string name="share">Compartir</string>
+
+    <!-- Mensajes -->
+    <string name="loading">Cargando…</string>
+    <string name="error_loading">Error al cargar datos</string>
+    <string name="no_internet">Sin conexión a internet</string>
+    <string name="try_again">Intentar de nuevo</string>
+
+    <!-- Navegación -->
+    <string name="home">Inicio</string>
+    <string name="maps">Mapas</string>
+    <string name="favorites">Favoritos</string>
+    <string name="profile">Perfil</string>
+
+    <!-- Perfil -->
+    <string name="edit_profile">Editar perfil</string>
+    <string name="settings">Configuración</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="logout_confirmation">¿Estás seguro de cerrar sesión?</string>
+    <string name="cancel">Cancelar</string>
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
+    <string name="default_web_client_id">1234567890-xxxx.apps.googleusercontent.com</string>
+
+</resources>

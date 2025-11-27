@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TEMA: CardView + ConstraintLayout -->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardFavorite"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
+
+    <!-- ConstraintLayout -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <!-- Imagen -->
+        <ImageView
+            android:id="@+id/ivFavoriteImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:src="@drawable/machupicchu" />
+
+        <!-- Overlay para la imagen -->
+        <View
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="#22000000"
+            app:layout_constraintTop_toTopOf="@id/ivFavoriteImage"
+            app:layout_constraintStart_toStartOf="@id/ivFavoriteImage" />
+
+        <!-- Contenedor de info -->
+        <LinearLayout
+            android:id="@+id/layoutInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ivFavoriteImage"
+            app:layout_constraintEnd_toStartOf="@id/btnRemoveFavorite"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <!-- Nombre -->
+            <TextView
+                android:id="@+id/tvFavoriteName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#1A1A1A"
+                android:maxLines="2"
+                android:ellipsize="end"
+                tools:text="Machu Picchu" />
+
+            <!-- Ubicación -->
+            <TextView
+                android:id="@+id/tvFavoriteLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textSize="13sp"
+                android:textColor="#666666"
+                android:drawableStart="@drawable/ic_location"
+                android:drawablePadding="4dp"
+                tools:text="Cusco, Perú" />
+
+            <!-- Rating y categoría -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvFavoriteRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="#FFD700"
+                    android:drawableStart="@drawable/ic_star"
+                    android:drawablePadding="2dp"
+                    tools:text="4.9" />
+
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="4dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:background="#CCCCCC" />
+
+                <TextView
+                    android:id="@+id/tvFavoriteCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="#666666"
+                    tools:text="Histórico" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- TEMA: Buttons - Botón para eliminar favorito -->
+        <ImageButton
+            android:id="@+id/btnRemoveFavorite"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_favorite_filled"
+            android:contentDescription="Eliminar de favoritos"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@color/error" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
