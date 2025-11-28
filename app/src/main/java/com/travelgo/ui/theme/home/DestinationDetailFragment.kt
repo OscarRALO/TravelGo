@@ -2,6 +2,7 @@ package com.travelgo.ui.theme.home
 
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,8 @@ import androidx.fragment.app.Fragment
 import com.travelgo.R
 import com.travelgo.data.local.FavoritesPreferences
 import com.travelgo.data.local.MockDataProvider
+import com.travelgo.data.model.Destination
+import com.travelgo.data.repository.FavoritesRepository
 import java.util.Locale
 
 class DestinationDetailFragment : Fragment(), TextToSpeech.OnInitListener {
@@ -21,6 +24,7 @@ class DestinationDetailFragment : Fragment(), TextToSpeech.OnInitListener {
     private var destinationId: String? = null
     private lateinit var favoritesPreferences: FavoritesPreferences
     private var isFavorite = false
+    private val favoritesRepository = FavoritesRepository()
 
     // ---- TTS ----
     private lateinit var tts: TextToSpeech
@@ -137,19 +141,50 @@ class DestinationDetailFragment : Fragment(), TextToSpeech.OnInitListener {
     }
 
     private fun toggleFavorite(view: View) {
-        destinationId?.let { id ->
-            isFavorite = favoritesPreferences.toggleFavorite(id)
-            updateFavoriteIcon(view)
-
-            val message = if (isFavorite) {
-                "¡Agregado a favoritos! ❤️"
-            } else {
-                "Eliminado de favoritos"
-            }
-
-            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        val destination = getDestinationFromArguments() // Asegúrate de tener el objeto Destination completo
+// LOG DE DEPURACIÓN
+        Log.d("DEBUG_APP", "Intentando guardar: ID='${destination.id}', Nombre='${destination.nombre}'")
+        if (isFavorite) {
+            // Eliminar de Firebase
+            favoritesRepository.removeFavorite(destination.id,
+                onSuccess = {
+                    isFavorite = false
+                    updateFavoriteIcon(view)
+                    Toast.makeText(requireContext(), "Eliminado de favoritos", Toast.LENGTH_SHORT).show()
+                },
+                onFailure = {
+                    Toast.makeText(requireContext(), "Error al eliminar", Toast.LENGTH_SHORT).show()
+                }
+            )
+        } else {
+            // Guardar en Firebase
+            favoritesRepository.addFavorite(destination,
+                onSuccess = {
+                    isFavorite = true
+                    updateFavoriteIcon(view)
+                    Toast.makeText(requireContext(), "¡Agregado a favoritos! ❤️", Toast.LENGTH_SHORT).show()
+                },
+                onFailure = {
+                    Toast.makeText(requireContext(), "Error al guardar", Toast.LENGTH_SHORT).show()
+                }
+            )
         }
     }
+
+    // Función auxiliar para reconstruir el objeto Destination desde los argumentos (Bundle)
+    private fun getDestinationFromArguments(): Destination {
+        return Destination(
+            id = arguments?.getString("destinationId") ?: "",
+            nombre = arguments?.getString("name") ?: "",
+            ciudad = arguments?.getString("location")?.split(",")?.get(0)?.trim() ?: "", // Ejemplo simple
+            descripcion = arguments?.getString("description") ?: "",
+            imagenPrincipal = arguments?.getInt("image") ?: 0,
+            rating = arguments?.getFloat("rating") ?: 0f,
+            precio = arguments?.getString("price") ?: "",
+            // Completa los campos necesarios...
+        )
+    }
+
 
     private fun updateFavoriteIcon(view: View) {
         val btnFavorite = view.findViewById<ImageButton>(R.id.btnFavorite)

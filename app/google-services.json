@@ -14,7 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "1234567890-xxxx.apps.googleusercontent.com",
+          "client_id": "1024604954528-p01ivbfe507i4ugt529ggtjjpp88bq7f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.travelgo",
+            "certificate_hash": "8e3d58b40467e6670424f29d6e295c675dedb7d0"
+          }
+        },
+        {
+          "client_id": "1024604954528-5vfvn6b2583lb70f5gtje9990q1j6ka0.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -25,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1024604954528-5vfvn6b2583lb70f5gtje9990q1j6ka0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -14,10 +14,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.travelgo.R
 import com.travelgo.data.local.FavoritesPreferences
-import com.travelgo.data.local.MockDataProvider
 import com.travelgo.data.model.Destination
+import com.travelgo.data.repository.FavoritesRepository
 import com.travelgo.ui.theme.adapters.FavoritesAdapter
-
+import android.widget.Toast
 
 class FavoritesFragment : Fragment() {
     private lateinit var rvFavorites: RecyclerView
@@ -29,6 +29,9 @@ class FavoritesFragment : Fragment() {
     private lateinit var adapter: FavoritesAdapter
     private lateinit var favoritesPreferences: FavoritesPreferences
     private var favoriteDestinations = listOf<Destination>()
+    private val favoritesRepository = FavoritesRepository()
+
+
 
 
     override fun onCreateView(
@@ -90,21 +93,29 @@ class FavoritesFragment : Fragment() {
     }
 
 
+// Asegúrate de tener instanciado el repositorio arriba:
+    // private val favoritesRepository = FavoritesRepository()
+
     private fun loadFavorites() {
         showLoading(true)
 
+        // Llamamos a Firestore
+        favoritesRepository.getFavorites(
+            onSuccess = { destinos ->
+                favoriteDestinations = destinos
+                adapter.submitList(favoriteDestinations)
+                updateFavoritesCount()
 
-        view?.postDelayed({
-            val favoriteIds = favoritesPreferences.getFavoriteIds()
-
-            favoriteDestinations = MockDataProvider.getDestinationsByIds(favoriteIds)
-
-            adapter.submitList(favoriteDestinations)
-            updateFavoritesCount()
-            showLoading(false)
-            showEmptyState(favoriteDestinations.isEmpty())
-
-        }, 300)
+                showLoading(false)
+                showEmptyState(favoriteDestinations.isEmpty())
+            },
+            onFailure = { exception ->
+                showLoading(false)
+                // Si falla (por ejemplo, por falta de internet), mostramos estado vacío o mensaje
+                showEmptyState(true)
+                Toast.makeText(requireContext(), "Error al cargar: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 
 
