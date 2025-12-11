@@ -10,121 +10,116 @@ class FavoritesRepository {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
-    // Referencia a la colección del usuario actual
-    private fun getFavoritesCollection() = auth.currentUser?.uid?.let { uid ->
-        db.collection("usuarios").document(uid).collection("favoritos")
+    companion object {
+        private const val TAG = "FavoritesRepository"
     }
 
-    /**
-     * Guarda un destino en la sub-colección 'favoritos' del usuario
-     */
-    /*fun addFavorite(destination: Destination, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        val collection = getFavoritesCollection() ?: return
+    fun addFavorite(
+        destination: Destination,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        val user = auth.currentUser
+        if (user == null) {
+            val e = Exception("Usuario no autenticado (auth.currentUser == null)")
+            Log.e(TAG, "addFavorite FAILED: user null. Destino: ${destination.id}")
+            onFailure(e)
+            return
+        }
+        val uid = user.uid
 
-        // Creamos un mapa con los datos esenciales para mostrar en la lista de favoritos
-        // Nota: Si usas imágenes locales (R.drawable...), guardamos el ID entero.
-        // Para una app real en producción, deberías guardar URLs de imágenes subidas a Storage.
-        val favoriteData = hashMapOf(
-            "id" to destination.id,
-            "nombre" to destination.nombre,
-            "ciudad" to destination.ciudad,
-            "pais" to destination.pais,
-            "descripcion" to destination.descripcion,
-            "categoria" to destination.categoria,
-            "imagenPrincipal" to destination.imagenPrincipal, // Guardamos el ID del recurso
-            "rating" to destination.rating,
-            "precio" to destination.precio
-        )
-
-        collection.document(destination.id)
-            .set(favoriteData)
-            .addOnSuccessListener {
-                Log.d("Firestore", "Favorito guardado: ${destination.nombre}")
-                onSuccess()
-            }
-            .addOnFailureListener { e ->
-                Log.e("Firestore", "Error al guardar favorito", e)
-                onFailure(e)
-            }
-    }*/
-
-// En FavoritesRepository.kt
-
-    /**
-     * Obtener la lista de favoritos desde Firestore
-     */
-    fun getFavorites(onSuccess: (List<Destination>) -> Unit, onFailure: (Exception) -> Unit) {
-        val uid = auth.currentUser?.uid
-
-        if (uid == null) {
-            onFailure(Exception("Usuario no logueado"))
+        if (destination.id.isEmpty()) {
+            val e = Exception("ID de destino vacío. No se puede guardar.")
+            Log.e(TAG, "addFavorite FAILED: id vacío. Destination: $destination")
+            onFailure(e)
             return
         }
 
-        db.collection("usuarios").document(uid).collection("favoritos")
-            .get()
-            .addOnSuccessListener { snapshot ->
-                // Convertimos los documentos de Firestore a objetos Destination
-                val destinos = snapshot.toObjects(Destination::class.java)
-                onSuccess(destinos)
-            }
-            .addOnFailureListener { exception ->
-                onFailure(exception)
-            }
+        // Prepara objeto para guardar: Firestore ignorará @Exclude
+        try {
+            Log.d(TAG, "addFavorite: intentando guardar destino '${destination.nombre}' (id=${destination.id}) para uid=$uid")
+            db.collection("users")
+                .document(uid)
+                .collection("favoritos")
+                .document(destination.id)
+                .set(destination)
+                .addOnSuccessListener {
+                    Log.d(TAG, "addFavorite: ÉXITO guardado destinoId=${destination.id} para uid=$uid")
+                    onSuccess()
+                }
+                .addOnFailureListener { ex ->
+                    Log.e(TAG, "addFavorite: ERROR al guardar destinoId=${destination.id} para uid=$uid -> ${ex.message}", ex)
+                    onFailure(ex)
+                }
+        } catch (ex: Exception) {
+            Log.e(TAG, "addFavorite: excepción al preparar set() -> ${ex.message}", ex)
+            onFailure(ex)
+        }
     }
 
+    fun removeFavorite(
+        destinationId: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        val user = auth.currentUser
+        if (user == null) {
+            val e = Exception("Usuario no autenticado (auth.currentUser == null)")
+            Log.e(TAG, "removeFavorite FAILED: user null. destinationId=$destinationId")
+            onFailure(e)
+            return
+        }
+        val uid = user.uid
 
-    fun addFavorite(destination: Destination, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        val uid = auth.currentUser?.uid
-
-        // 1. DIAGNÓSTICO: Validar explícitamente si hay usuario
-        if (uid == null) {
-            val errorMsg = "ERROR CRÍTICO: Usuario no logueado (UID es null). No se puede guardar en Firestore."
-            Log.e("Firestore", errorMsg)
-            onFailure(Exception(errorMsg)) // Avisar al fragmento que falló
+        if (destinationId.isEmpty()) {
+            val e = Exception("destinationId vacío")
+            Log.e(TAG, "removeFavorite FAILED: destinationId vacío")
+            onFailure(e)
             return
         }
 
-        // 2. Si hay usuario, procedemos
-        db.collection("usuarios").document(uid).collection("favoritos")
-            .document(destination.id)
-            .set(destination) // Puedes pasar el objeto destination directo si tiene constructor vacío
-            .addOnSuccessListener {
-                Log.d("Firestore", "¡Éxito! Favorito guardado: ${destination.nombre}")
-                onSuccess()
-            }
-            .addOnFailureListener { e ->
-                Log.e("Firestore", "Error de Firebase al escribir: ${e.message}", e)
-                onFailure(e)
-            }
-    }
-    /**
-     * Elimina un destino de favoritos
-     */
-    fun removeFavorite(destinationId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        // 1. Obtenemos el UID explícitamente para validar
-        val uid = auth.currentUser?.uid
-
-        // 2. DIAGNÓSTICO: Si es nulo, avisamos del error y NO continuamos
-        if (uid == null) {
-            val errorMsg = "ERROR CRÍTICO: Usuario no logueado (UID es null). No se puede eliminar de Firestore."
-            Log.e("Firestore", errorMsg)
-            onFailure(Exception(errorMsg)) // Avisar al fragmento que falló
-            return
-        }
-
-        // 3. Si hay usuario, procedemos a borrar
-        // Nota: Ya no usamos getFavoritesCollection() para evitar la confusión, construimos la ruta directa
-        db.collection("usuarios").document(uid).collection("favoritos")
+        Log.d(TAG, "removeFavorite: intentando eliminar $destinationId para uid=$uid")
+        db.collection("users")
+            .document(uid)
+            .collection("favoritos")
             .document(destinationId)
             .delete()
             .addOnSuccessListener {
-                Log.d("Firestore", "Favorito eliminado: $destinationId")
+                Log.d(TAG, "removeFavorite: ÉXITO eliminado $destinationId")
                 onSuccess()
             }
-            .addOnFailureListener { e ->
-                Log.e("Firestore", "Error al eliminar favorito", e)
-                onFailure(e)
+            .addOnFailureListener { ex ->
+                Log.e(TAG, "removeFavorite: ERROR al eliminar $destinationId -> ${ex.message}", ex)
+                onFailure(ex)
+            }
+    }
+
+    fun getFavorites(
+        onSuccess: (List<Destination>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        val user = auth.currentUser
+        if (user == null) {
+            val e = Exception("Usuario no autenticado")
+            Log.e(TAG, "getFavorites FAILED: user null")
+            onFailure(e)
+            return
+        }
+        val uid = user.uid
+
+        Log.d(TAG, "getFavorites: obteniendo favoritos para uid=$uid")
+        db.collection("users")
+            .document(uid)
+            .collection("favoritos")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                Log.d(TAG, "getFavorites: snapshot.size=${snapshot.size()}")
+                val list = snapshot.toObjects(Destination::class.java)
+                onSuccess(list)
+            }
+            .addOnFailureListener { ex ->
+                Log.e(TAG, "getFavorites: ERROR -> ${ex.message}", ex)
+                onFailure(ex)
             }
     }
 }

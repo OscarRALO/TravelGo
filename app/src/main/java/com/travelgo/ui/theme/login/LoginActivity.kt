@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.travelgo.R
 import com.travelgo.ui.theme.home.HomeActivity
+import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginActivity : AppCompatActivity() {
 
@@ -29,17 +30,40 @@ class LoginActivity : AppCompatActivity() {
     ) { result ->
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
         try {
-            // Google Sign In fue exitoso, autenticar con Firebase
             val account = task.getResult(ApiException::class.java)
             account?.idToken?.let { idToken ->
                 firebaseAuthWithGoogle(idToken)
             }
         } catch (e: ApiException) {
-            // Error común: SHA-1 no agregado en consola o google-services.json desactualizado
             Log.w("LoginActivity", "Google sign in failed", e)
             Toast.makeText(this, "Error al conectar con Google: ${e.statusCode}", Toast.LENGTH_LONG).show()
         }
     }
+
+    // CREA PERFIL EN FIRESTORE SI NO EXISTE
+    private fun crearPerfilSiNoExiste() {
+        val user = auth.currentUser ?: return
+        val uid = user.uid
+        val email = user.email ?: ""
+
+        val userDoc = FirebaseFirestore.getInstance()
+            .collection("users")
+            .document(uid)
+
+        userDoc.get().addOnSuccessListener { snap ->
+            if (!snap.exists()) {
+                val data = mapOf(
+                    "uid" to uid,
+                    "email" to email,
+                    "nombre" to (user.displayName ?: ""),
+                    "foto" to (user.photoUrl?.toString() ?: ""),
+                    "createdAt" to System.currentTimeMillis()
+                )
+                userDoc.set(data)
+            }
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,9 +71,9 @@ class LoginActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        // 2. Configurar opciones de Google
+        // 2. Configurar Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id)) // Importante: Esto viene de strings.xml
+            .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
 
@@ -61,7 +85,7 @@ class LoginActivity : AppCompatActivity() {
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val btnGoogle = findViewById<SignInButton>(R.id.btnGoogleSignIn)
 
-        // --- Lógica Correo/Contraseña ---
+        // --- LOGIN CON EMAIL ---
         btnLogin.setOnClickListener {
             val email = etUser.text.toString().trim()
             val password = etPassword.text.toString().trim()
@@ -74,6 +98,7 @@ class LoginActivity : AppCompatActivity() {
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
+                        crearPerfilSiNoExiste()   // <--- ***IMPORTANTE***
                         irAHome()
                     } else {
                         Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_LONG).show()
@@ -81,7 +106,7 @@ class LoginActivity : AppCompatActivity() {
                 }
         }
 
-        // --- Lógica Botón Google ---
+        // --- LOGIN CON GOOGLE ---
         btnGoogle.setOnClickListener {
             signInGoogle()
         }
@@ -97,6 +122,7 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
+                    crearPerfilSiNoExiste()   // <--- ***IMPORTANTE***
                     Toast.makeText(this, "¡Bienvenido!", Toast.LENGTH_SHORT).show()
                     irAHome()
                 } else {
@@ -107,7 +133,6 @@ class LoginActivity : AppCompatActivity() {
 
     private fun irAHome() {
         val intent = Intent(this, HomeActivity::class.java)
-        // Evita que el usuario pueda volver al login presionando "atrás"
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
@@ -115,9 +140,8 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        // Si el usuario ya está logueado, pasar directo
         if (auth.currentUser != null) {
             irAHome()
         }
     }
-}
+}   

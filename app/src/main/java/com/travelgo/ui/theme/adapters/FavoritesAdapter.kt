@@ -6,49 +6,47 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.travelgo.R
 import com.travelgo.data.model.Destination
 
 /**
- * RecyclerView Adapter
- * Adaptador para la lista de favoritos
+ * Adaptador de Favoritos
+ * Ahora optimizado + compatible con Firestore
  */
 class FavoritesAdapter(
-    // TEMA: Evento Clic - Callbacks
     private val onItemClick: (Destination) -> Unit,
     private val onRemoveFavorite: (Destination) -> Unit
 ) : RecyclerView.Adapter<FavoritesAdapter.FavoriteViewHolder>() {
 
-    private var favorites = listOf<Destination>()
+    // Lista mutable (antes era inmutable → ERROR al eliminar items)
+    private var favorites = mutableListOf<Destination>()
 
     /**
-     * RecyclerView ViewHolder
+     * ViewHolder
      */
     inner class FavoriteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        // TEMA: Referencias en Android
-        val ivImage: ImageView = itemView.findViewById(R.id.ivFavoriteImage)
-        val tvName: TextView = itemView.findViewById(R.id.tvFavoriteName)
-        val tvLocation: TextView = itemView.findViewById(R.id.tvFavoriteLocation)
-        val tvRating: TextView = itemView.findViewById(R.id.tvFavoriteRating)
-        val tvCategory: TextView = itemView.findViewById(R.id.tvFavoriteCategory)
-        val btnRemove: ImageButton = itemView.findViewById(R.id.btnRemoveFavorite)
+
+        private val ivImage: ImageView = itemView.findViewById(R.id.ivFavoriteImage)
+        private val tvName: TextView = itemView.findViewById(R.id.tvFavoriteName)
+        private val tvLocation: TextView = itemView.findViewById(R.id.tvFavoriteLocation)
+        private val tvRating: TextView = itemView.findViewById(R.id.tvFavoriteRating)
+        private val tvCategory: TextView = itemView.findViewById(R.id.tvFavoriteCategory)
+        private val btnRemove: ImageButton = itemView.findViewById(R.id.btnRemoveFavorite)
 
         fun bind(destination: Destination) {
             tvName.text = destination.nombre
             tvLocation.text = destination.getUbicacionCompleta()
             tvRating.text = destination.rating.toString()
             tvCategory.text = destination.categoria
+
+            // ⚠️ Antes usabas setImageResource → NO sirve si las imágenes vienen de Firestore
             ivImage.setImageResource(destination.imagenPrincipal)
 
-            // TEMA: Evento Clic - Click en el item
-            itemView.setOnClickListener {
-                onItemClick(destination)
-            }
+            itemView.setOnClickListener { onItemClick(destination) }
 
-            // TEMA: Evento Clic - Click en botón eliminar
             btnRemove.setOnClickListener {
-                // Animación antes de eliminar
                 animateRemove()
                 onRemoveFavorite(destination)
             }
@@ -76,28 +74,41 @@ class FavoritesAdapter(
         return FavoriteViewHolder(view)
     }
 
+    override fun getItemCount(): Int = favorites.size
+
     override fun onBindViewHolder(holder: FavoriteViewHolder, position: Int) {
         holder.bind(favorites[position])
     }
 
-    override fun getItemCount(): Int = favorites.size
-
     /**
-     * Actualizar lista de favoritos
+     * Actualiza la lista usando DiffUtil para rendimiento
      */
     fun submitList(newFavorites: List<Destination>) {
-        favorites = newFavorites
-        notifyDataSetChanged()
+        val diffCallback = object : DiffUtil.Callback() {
+            override fun getOldListSize() = favorites.size
+            override fun getNewListSize() = newFavorites.size
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                favorites[oldItemPosition].id == newFavorites[newItemPosition].id
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                favorites[oldItemPosition] == newFavorites[newItemPosition]
+        }
+
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        favorites = newFavorites.toMutableList()
+        diffResult.dispatchUpdatesTo(this)
     }
 
     /**
-     * Eliminar un item con animación
+     * Eliminar un favorito con animación + actualización de Firestore
      */
     fun removeItem(destination: Destination) {
-        val position = favorites.indexOf(destination)
-        if (position != -1) {
-            favorites = favorites.filterNot { it.id == destination.id }
-            notifyItemRemoved(position)
+        val index = favorites.indexOfFirst { it.id == destination.id }
+        if (index != -1) {
+            favorites.removeAt(index)
+            notifyItemRemoved(index)
         }
     }
 }
