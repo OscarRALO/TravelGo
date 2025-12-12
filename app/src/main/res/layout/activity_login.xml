@@ -8,7 +8,6 @@
     android:background="@drawable/gradient_background"
     tools:context=".ui.theme.login.LoginActivity">
 
-    <!-- Logo -->
     <ImageView
         android:id="@+id/imgLogo"
         android:layout_width="100dp"
@@ -22,7 +21,6 @@
         app:layout_constraintVertical_chainStyle="packed"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Card del formulario -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardLogin"
         android:layout_width="0dp"
@@ -46,13 +44,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Iniciar Sesión"
+                android:text="Iniciar Sesion"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="#1A237E"
                 android:layout_marginBottom="24dp"/>
 
-            <!-- Campo usuario con icono -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -71,11 +68,10 @@
                     android:inputType="textEmailAddress"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Campo contraseña con icono -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Contraseña"
+                android:hint="Contrasena"
                 app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
                 app:startIconTint="#1A237E"
                 app:endIconMode="password_toggle"
@@ -92,7 +88,6 @@
                     android:inputType="textPassword"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Switch Recordarme -->
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switchRemember"
                 android:layout_width="wrap_content"
@@ -103,7 +98,6 @@
                 app:trackTint="#BBDEFB"
                 android:layout_marginBottom="24dp"/>
 
-            <!-- Botón de login -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLogin"
                 android:layout_width="match_parent"
@@ -115,20 +109,25 @@
                 app:backgroundTint="#1A237E"
                 android:elevation="4dp"/>
 
-            <com.google.android.gms.common.SignInButton
-                android:id="@+id/btnGoogleSignIn"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGoogle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" />
+                android:layout_height="60dp"
+                android:text="INICIAR CON GOOGLE"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"
+                app:cornerRadius="30dp"
+                app:backgroundTint="#DB4437"
+                android:textColor="@android:color/white"/>
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Texto inferior -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="¿Olvidaste tu contraseña?"
+        android:text="Olvidaste tu contrasena?"
         android:textColor="@android:color/white"
         android:textStyle="bold"
         android:textSize="14sp"

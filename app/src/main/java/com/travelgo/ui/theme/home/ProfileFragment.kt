@@ -51,7 +51,6 @@ class ProfileFragment : Fragment() {
             Toast.makeText(requireContext(), "Notificación en camino...", Toast.LENGTH_SHORT).show()
         }
 
-        // --------------- 🔥 BOTÓN LOGOUT AÑADIDO AQUÍ 🔥 ----------------
         val btnLogout = view.findViewById<Button>(R.id.btnLogout)
         btnLogout.setOnClickListener {
 

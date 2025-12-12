@@ -27,10 +27,8 @@ class OnboardingAdapter(private val items: List<OnboardingItem>) :
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_onboarding, parent, false)
         return OnboardingViewHolder(view)
     }
-
     override fun onBindViewHolder(holder: OnboardingViewHolder, position: Int) {
         holder.bind(items[position])
     }
-
     override fun getItemCount(): Int = items.size
 }

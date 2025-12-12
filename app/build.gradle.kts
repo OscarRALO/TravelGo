@@ -65,14 +65,14 @@ dependencies {
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.vectordrawable:vectordrawable:1.2.0")
-
+    // ✅ REALTIME DATABASE - NUEVA DEPENDENCIA
+    implementation("com.google.firebase:firebase-database")
     // --- WORK MANAGER ---
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     // --- IMÁGENES (GLIDE) ---
     // Agrega esto para que funcionen las fotos de la nube
     implementation("com.github.bumptech.glide:glide:4.16.0")
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
